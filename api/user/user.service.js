@@ -14,13 +14,13 @@ export const userService = {
 
 async function query(filterBy = {}) {
 	const criteria = _buildCriteria(filterBy)
-    
+
 	try {
 		const collection = await dbService.getCollection('user')
-		var users = await collection.find(criteria).sort({ nickname: -1 }).toArray()
+		var users = await collection.find(criteria).sort({ username: -1 }).toArray()
 		users = users.map(user => {
 			delete user.password
-			user.isHappy = true
+			// user.isHappy = true
 			user.createdAt = user._id.getTimestamp()
 			return user
 		})
@@ -70,7 +70,7 @@ async function update(user) {
 			_id: ObjectId.createFromHexString(user._id),
 			username: user.username,
 			fullname: user.fullname,
-			score: user.score,
+			// score: user.score,
 		}
 		const collection = await dbService.getCollection('user')
 		await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -92,7 +92,7 @@ async function add(user) {
 			username: user.username,
 			password: user.password,
 			fullname: user.fullname,
-			score: user.score || 0,
+			// score: user.score || 0,
 		}
 		const collection = await dbService.getCollection('user')
 		await collection.insertOne(userToAdd)

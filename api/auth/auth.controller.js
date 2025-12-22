@@ -5,8 +5,8 @@ export async function login(req, res) {
     const { username, password } = req.body
     try {
         const user = await authService.login(username, password)
-        const loginToken = authService.getLoginToken(user)
-        
+        const loginToken = await authService.getLoginToken(user)
+        console.log('loginToken', loginToken)
         logger.info('User login: ', user)
         res.cookie('loginToken', loginToken)
 
@@ -20,14 +20,14 @@ export async function login(req, res) {
 export async function signup(req, res) {
     try {
         const { username, password, fullname } = req.body
-        
+
         // IMPORTANT!!! 
         // Never write passwords to log file!!!
         // logger.debug(fullname + ', ' + username + ', ' + password)
-        
+
         const account = await authService.signup(username, password, fullname)
         logger.debug(`auth.route - new account created: ` + JSON.stringify(account))
-        
+
         const user = await authService.login(username, password)
         const loginToken = authService.getLoginToken(user)
 
@@ -39,7 +39,8 @@ export async function signup(req, res) {
     }
 }
 
-export async function logout(req, res){
+export async function logout(req, res) {
+    logger.info('logging out')
     try {
         res.clearCookie('loginToken')
         res.send({ msg: 'Logged out successfully' })

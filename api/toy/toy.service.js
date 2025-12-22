@@ -4,6 +4,8 @@ import { dbService } from '../../services/db.service.js'
 import { logger } from '../../services/logger.service.js'
 import { utilService } from '../../services/util.service.js'
 
+const PAGE_SIZE = 5
+
 export const toyService = {
     remove,
     query,
@@ -16,12 +18,18 @@ export const toyService = {
 
 async function query(filterBy = { txt: '' }) {
     try {
-        const criteria = {
-            name: { $regex: filterBy.txt, $options: 'i' },
-        }
+        const { filterCriteria, sortCriteria, skip } = _buildCriteria(filterBy)
         const collection = await dbService.getCollection('toy')
-        var toys = await collection.find(criteria).toArray()
-        return toys
+        const totalCount = await collection.countDocuments(filterCriteria)
+
+        const filteredToys =
+            await collection
+                .find(filterCriteria)
+                .sort(sortCriteria)
+                .skip(skip)
+                .limit(PAGE_SIZE).toArray()
+        return filteredToys
+
     } catch (err) {
         logger.error('cannot find toys', err)
         throw err
@@ -100,4 +108,30 @@ async function removeToyMsg(toyId, msgId) {
         logger.error(`cannot add toy msg ${toyId}`, err)
         throw err
     }
+}
+
+
+function _buildCriteria(filterBy) {
+    const filterCriteria = {}
+
+    if (filterBy.txt) {
+        filterCriteria.name = { $regex: filterBy.txt, $options: 'i' }
+    }
+    if (filterBy.inStock) {
+        filterCriteria.inStock = JSON.parse(filterBy.inStock)
+    }
+    if (filterBy.labels && filterBy.labels.length) {
+        filterCriteria.labels = { $in: filterBy.labels }
+    }
+    const sortCriteria = {}
+    const sortBy = filterBy.sort
+
+    if (sortBy) {
+        // const sortDirection = +sortBy.sortDir
+        // sortCriteria[sortBy.type] = sortDirection
+        sortCriteria[sortBy] = 1
+    } else sortCriteria.createdAt = -1
+
+    const skip = filterBy.pageIdx !== undefined ? filterBy.pageIdx * PAGE_SIZE : 0
+    return { filterCriteria, sortCriteria, skip }
 }

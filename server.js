@@ -37,9 +37,11 @@ if (process.env.NODE_ENV === 'production') {
     app.use(cors(corsOptions))
 }
 
+
+
 import { authRoutes } from './api/auth/auth.routes.js'
 import { userRoutes } from './api/user/user.routes.js'
-import { carRoutes } from './api/car/car.routes.js'
+// import { carRoutes } from './api/car/car.routes.js'
 import { toyRoutes } from './api/toy/toy.routes.js'
 
 // routes
