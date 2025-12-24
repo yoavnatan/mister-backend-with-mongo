@@ -67,6 +67,7 @@ export async function removeToy(req, res) {
 
 export async function addToyMsg(req, res) {
     const { loggedinUser } = req
+    console.log(req.body.txt)
     try {
         const toyId = req.params.id
         const msg = {
@@ -83,11 +84,12 @@ export async function addToyMsg(req, res) {
 }
 
 export async function removeToyMsg(req, res) {
+    console.log(req.params)
     try {
         const { toyId, msgId } = req.params
 
-        const removedId = await toyService.removeToyMsg(toyId, msgId)
-        res.send(removedId)
+        await toyService.removeToyMsg(toyId, msgId)
+        res.send(msgId)
     } catch (err) {
         logger.error('Failed to remove toy msg', err)
         res.status(500).send({ err: 'Failed to remove toy msg' })
