@@ -67,7 +67,6 @@ export async function removeToy(req, res) {
 
 export async function addToyMsg(req, res) {
     const { loggedinUser } = req
-    console.log(req.body.txt)
     try {
         const toyId = req.params.id
         const msg = {
@@ -95,3 +94,4 @@ export async function removeToyMsg(req, res) {
         res.status(500).send({ err: 'Failed to remove toy msg' })
     }
 }
+

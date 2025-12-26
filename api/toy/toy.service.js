@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb'
 import { dbService } from '../../services/db.service.js'
 import { logger } from '../../services/logger.service.js'
 import { utilService } from '../../services/util.service.js'
+import { reviewService } from '../review/review.service.js'
 
 const PAGE_SIZE = 5
 
@@ -14,6 +15,7 @@ export const toyService = {
     update,
     addToyMsg,
     removeToyMsg,
+
 }
 
 async function query(filterBy = { txt: '' }) {
@@ -41,6 +43,15 @@ async function getById(toyId) {
         const collection = await dbService.getCollection('toy')
         const toy = await collection.findOne({ _id: ObjectId.createFromHexString(toyId) })
         toy.createdAt = toy._id.getTimestamp()
+
+        const criteria = { toyId: toyId }
+
+        toy.reviews = await reviewService.query(criteria)
+        toy.reviews = toy.reviews.map(review => {
+            delete review.aboutToy
+            return review
+        })
+
         return toy
     } catch (err) {
         logger.error(`while finding toy ${toyId}`, err)
@@ -109,7 +120,6 @@ async function removeToyMsg(toyId, msgId) {
         throw err
     }
 }
-
 
 function _buildCriteria(filterBy) {
     const filterCriteria = {}
