@@ -1,4 +1,4 @@
-import fs  from 'fs'
+import fs from 'fs'
 
 const logsDir = './logs'
 if (!fs.existsSync(logsDir)) {
@@ -33,20 +33,20 @@ function _isError(e) {
 function _doLog(level, ...args) {
 
     const strs = args.map(arg => {
-        if (typeof arg ===  'string') {
+        if (typeof arg === 'string') {
         } else if (_isError(arg)) {
         } else if (arg instanceof Promise) {
             arg = 'Promise'
         } else {
-            arg = JSON.stringify(arg)    
+            arg = JSON.stringify(arg)
         }
         return arg
-    })   
+    })
 
     var line = strs.join(' | ')
     line = `${_getTime()} - ${level} - ${line} \n`
     console.log(line)
-    fs.appendFile('./logs/backend.log', line, (err) =>{
+    fs.appendFile('./logs/backend.log', line, (err) => {
         if (err) console.log('FATAL: cannot write to log file')
     })
 }
