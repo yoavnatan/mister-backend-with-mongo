@@ -8,7 +8,9 @@ export async function getToys(req, res) {
             inStock: JSON.parse(req.query.inStock || null),
             maxPrice: +req.query.maxPrice || 0,
             labels: req.query.labels || [],
-            sort: req.query.sort || ''
+            sort: req.query.sort || '',
+            pageIdx: req.query.pageIdx || 0,
+
         }
         const toys = await toyService.query(filterBy)
         res.json(toys)
