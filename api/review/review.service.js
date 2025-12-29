@@ -37,7 +37,7 @@ async function query(filterBy = {}) {
                 $unwind: '$aboutToy',
             },
             {
-                $project: { // TODO: ?
+                $project: {
                     'txt': true,
                     'byUser._id': true, 'byUser.fullname': true,
                     'aboutToy._id': true, 'aboutToy.name': true,
