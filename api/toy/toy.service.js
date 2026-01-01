@@ -5,7 +5,7 @@ import { logger } from '../../services/logger.service.js'
 import { utilService } from '../../services/util.service.js'
 import { reviewService } from '../review/review.service.js'
 
-const PAGE_SIZE = 5
+const PAGE_SIZE = 4
 
 export const toyService = {
     remove,
@@ -27,9 +27,9 @@ async function query(filterBy = { txt: '' }) {
         const filteredToys =
             await collection
                 .find(filterCriteria)
-                .sort(sortCriteria)
-                .skip(skip)
-                .limit(PAGE_SIZE).toArray()
+                .sort(sortCriteria).toArray()
+        // .skip(skip)
+        // .limit(PAGE_SIZE).toArray()
         return filteredToys
 
     } catch (err) {
