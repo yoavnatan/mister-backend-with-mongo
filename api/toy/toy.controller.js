@@ -84,6 +84,25 @@ export async function addToyMsg(req, res) {
     }
 }
 
+export async function addToyChatMsg(req, res) {
+    const { loggedinUser } = req
+    console.log(req.body)
+    console.log(req.params.id)
+    try {
+        const toyId = req.params.id
+        const chatMsg = {
+            txt: req.body.txt,
+            from: req.body.from,
+            createdAt: Date.now()
+        }
+        const savedChatMsg = await toyService.addToyChatMsg(toyId, chatMsg)
+        res.json(savedChatMsg)
+    } catch (err) {
+        logger.error('Failed to update toy', err)
+        res.status(500).send({ err: 'Failed to update toy' })
+    }
+}
+
 export async function removeToyMsg(req, res) {
     console.log(req.params)
     try {
@@ -96,4 +115,6 @@ export async function removeToyMsg(req, res) {
         res.status(500).send({ err: 'Failed to remove toy msg' })
     }
 }
+
+
 

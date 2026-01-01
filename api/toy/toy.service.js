@@ -15,6 +15,7 @@ export const toyService = {
     update,
     addToyMsg,
     removeToyMsg,
+    addToyChatMsg,
 
 }
 
@@ -81,6 +82,7 @@ async function add(toy) {
     }
 }
 
+
 async function update(toy) {
     try {
         const toyToSave = {
@@ -122,6 +124,19 @@ async function removeToyMsg(toyId, msgId) {
     }
 }
 
+async function addToyChatMsg(toyId, msg) {
+    try {
+        msg.id = utilService.makeId()
+
+        const collection = await dbService.getCollection('toy')
+        await collection.updateOne({ _id: ObjectId.createFromHexString(toyId) }, { $push: { chatMsgs: msg } })
+        return msg
+    } catch (err) {
+        logger.error(`cannot add toy chatMsg ${toyId}`, err)
+        throw err
+    }
+}
+
 function _buildCriteria(filterBy) {
     const filterCriteria = {}
 
@@ -146,3 +161,4 @@ function _buildCriteria(filterBy) {
     const skip = filterBy.pageIdx !== undefined ? filterBy.pageIdx * PAGE_SIZE : 0
     return { filterCriteria, sortCriteria, skip }
 }
+

@@ -38,7 +38,6 @@ export function setupSocketAPI(http) {
         })
 
         socket.on('chat-send-msg', msg => {
-            console.log(msg)
             logger.info(`New chat msg from socket [id: ${socket.id}], emitting to topic ${socket.myTopic}`)
             // emits to all sockets:
             // gIo.emit('chat addMsg', msg)
