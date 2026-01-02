@@ -1,5 +1,7 @@
 import { toyService } from './toy.service.js'
 import { logger } from '../../services/logger.service.js'
+import { socketService } from '../../services/socket.service.js'
+import { asyncLocalStorage } from '../../services/als.service.js'
 
 export async function getToys(req, res) {
     try {
@@ -32,13 +34,14 @@ export async function getToyById(req, res) {
 }
 
 export async function addToy(req, res) {
-    const { loggedinUser } = req
+    const { loggedinUser } = asyncLocalStorage.getStore()
 
     try {
         const toy = req.body
         toy.owner = loggedinUser
         const addedToy = await toyService.add(toy)
         res.json(addedToy)
+        if (loggedinUser.isAdmin) socketService.broadcast({ type: 'shop-update', data: { txt: 'added a toy', toyId: toy._id }, userId: loggedinUser._id })
     } catch (err) {
         logger.error('Failed to add toy', err)
         res.status(500).send({ err: 'Failed to add toy' })
@@ -46,10 +49,13 @@ export async function addToy(req, res) {
 }
 
 export async function updateToy(req, res) {
+    const { loggedinUser } = asyncLocalStorage.getStore()
+
     try {
         const toy = { ...req.body, _id: req.params.id }
         const updatedToy = await toyService.update(toy)
         res.json(updatedToy)
+        if (loggedinUser.isAdmin) socketService.broadcast({ type: 'shop-update', data: { txt: 'updated a toy', toyId: toy._id }, userId: loggedinUser._id })
     } catch (err) {
         logger.error('Failed to update toy', err)
         res.status(500).send({ err: 'Failed to update toy' })
@@ -57,10 +63,14 @@ export async function updateToy(req, res) {
 }
 
 export async function removeToy(req, res) {
+    const { loggedinUser } = asyncLocalStorage.getStore()
+    console.log(loggedinUser)
+
     try {
         const toyId = req.params.id
         const deletedCount = await toyService.remove(toyId)
         res.send(`${deletedCount} toys removed`)
+        if (loggedinUser.isAdmin) socketService.broadcast({ type: 'shop-update', data: { txt: 'removed a toy', toyId }, userId: loggedinUser._id })
     } catch (err) {
         logger.error('Failed to remove toy', err)
         res.status(500).send({ err: 'Failed to remove toy' })
