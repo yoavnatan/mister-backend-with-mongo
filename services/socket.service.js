@@ -49,6 +49,10 @@ export function setupSocketAPI(http) {
             logger.info(`user-watch from socket [id: ${socket.id}], on user ${userId}`)
             socket.join('watching:' + userId)
         })
+
+        socket.on('chat-typing', toyId => {
+            socket.to(toyId).emit('chat-typing')
+        })
     })
 }
 

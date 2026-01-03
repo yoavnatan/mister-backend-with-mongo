@@ -48,6 +48,20 @@ export async function addToy(req, res) {
     }
 }
 
+export async function updateChatTyping(req, res) {
+    const { loggedinUser } = asyncLocalStorage.getStore()
+    const toyId = req.params.id
+    console.log(loggedinUser)
+    try {
+        socketService.broadcast({ type: 'chat-typing', data: null, room: toyId, userId: loggedinUser._id })
+        res.sendStatus(200)
+    } catch (err) {
+        console.log('couldnot set typing mode')
+        res.status(500).send('typing failed')
+
+    }
+}
+
 export async function updateToy(req, res) {
     const { loggedinUser } = asyncLocalStorage.getStore()
 
